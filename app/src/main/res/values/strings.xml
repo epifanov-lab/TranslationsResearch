@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TranslationsResearch</string>
+    <string name="app_name_lossles">webp_lossles</string>
+    <string name="app_name_lossy">webp_lossy</string>
 </resources>

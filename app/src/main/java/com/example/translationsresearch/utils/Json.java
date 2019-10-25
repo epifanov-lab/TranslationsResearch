@@ -133,6 +133,29 @@ public final class Json {
   public static Optional<JSONObject> getObject(JSONObject object, String key)
   {return get(object, key).map(v -> (JSONObject) v);}
 
+
+  /**
+   * @param array json array
+   * @param index array index
+   *
+   * @return value
+   */
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
+  public static JSONObject getObject(JSONArray array, int index) {
+    try {return optObject(array, index).get();}
+    catch (NoSuchElementException exception)
+    {return throwKeyNotFound(array, index);}
+  }
+
+  /**
+   * @param array json array
+   * @param index array index
+   *
+   * @return optional value
+   */
+  public static Optional<JSONObject> optObject(JSONArray array, int index)
+  {return get(array, index).map(v -> (JSONObject) v);}
+
   /**
    * @param object json object
    * @param key    json key
@@ -311,6 +334,8 @@ public final class Json {
   private static Optional<Object> get(JSONObject object, String key)
   {return ofNullable(object.opt(key)).filter(v -> v != NULL);}
 
+  private static Optional<Object> get(JSONArray array, int index)
+  {return ofNullable(array.opt(index)).filter(v -> v != NULL);}
 
   public static Optional<JSONObject> getJsonObject(JSONObject object, String key) {
     return Optional.ofNullable(object.optJSONObject(key));
@@ -327,6 +352,14 @@ public final class Json {
   @SuppressWarnings("UnusedReturnValue")
   private static <T> T throwKeyNotFound(JSONObject object, String key)
   {throw new IllegalArgumentException('"' + key + '"' + " not found in json:\n" + object);}
+
+  /**
+   * @param array json array
+   * @param index missing index
+   */
+  @SuppressWarnings("UnusedReturnValue")
+  private static <T> T throwKeyNotFound(JSONArray array, int index)
+  {throw new IllegalArgumentException('"' + index + '"' + " not found in json:\n" + array);}
 
   /** Json builder */
   @FunctionalInterface

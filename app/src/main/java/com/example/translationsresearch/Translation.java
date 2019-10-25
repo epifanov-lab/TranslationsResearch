@@ -17,7 +17,7 @@
  * from Realtime Technologies Limited.
  */
 
-package com.example.translationsresearch.entity;
+package com.example.translationsresearch;
 
 import com.example.translationsresearch.utils.Json;
 
@@ -41,24 +41,27 @@ public final class Translation {
   /** Stub translation */
   public static final String STUB =
     "{\"translationId\":1640,\"translationName\":\"video40\"," +
-    "\"translationDescription\":\"video40\",\"translationImage\":null," +
-    "\"sessionId\":\"3222222222x\",\"startTime\":\"2019-07-09T15:20:21.410808+03:00\"," +
-    "\"countryIsoCode\":null,\"geonameId\":null,\"cityNames\":null,\"countryNames\":null," +
-    "\"latitude\":null,\"longitude\":null,\"sessionName\":\"\\u0412\\u0438\\u0434\\u0435\\u043e " +
-    "40\",\"sessionDescription\":\"\\u0412\\u0438\\u0434\\u0435\\u043e 40\"," +
-    "\"sessionImage\":null,\"airId\":\"3222222222x\",\"airType\":\"PUBLIC\"," +
-    "\"airStatus\":\"ONLINE\",\"airSettings\":{\"personalAirCost\":100,\"restrictedAirCost\":100," +
-    "\"maxMembersCount\":32},\"streamMediaId\":40,\"streamType\":\"VIDEO\",\"streamWidth\":300," +
-    "\"streamHeight\":162,\"userId\":1640,\"nickname\":\"cembern_caroldya\"," +
-    "\"fullName\":\"Cembern Caroldya\",\"avatar\":null,\"videoSettings\":{\"geo\":null}," +
-    "\"viewCount\":\"0\",\"tags\":[],\"chatId\":40,\"videoCover\":{\"width\":null," +
-    "\"height\":null,\"mediaId\":null,\"createTime\":null,\"streamType\":null," +
-    "\"updateTime\":null},\"streamMediaUrl\":\"https:\\/\\/media.webka.com\\/hls\\/vod\\/40" +
-    ".mp4\\/index.m3u8\",\"isGeoBlocked\":false,\"hasAccessLimit\":false,\"hasAccess\":true," +
-    "\"hasAccessFree\":true,\"isBanned\":false,\"waitingAirFinished\":null}";
+      "\"translationDescription\":\"video40\",\"translationImage\":null," +
+      "\"sessionId\":\"3222222222x\",\"startTime\":\"2019-07-09T15:20:21.410808+03:00\"," +
+      "\"countryIsoCode\":null,\"geonameId\":null,\"cityNames\":null,\"countryNames\":null," +
+      "\"latitude\":null,\"longitude\":null,\"sessionName\":\"\\u0412\\u0438\\u0434\\u0435\\u043e " +
+      "40\",\"sessionDescription\":\"\\u0412\\u0438\\u0434\\u0435\\u043e 40\"," +
+      "\"sessionImage\":null,\"airId\":\"3222222222x\",\"airType\":\"PUBLIC\"," +
+      "\"airStatus\":\"ONLINE\",\"airSettings\":{\"personalAirCost\":100,\"restrictedAirCost\":100," +
+      "\"maxMembersCount\":32},\"streamMediaId\":40,\"streamType\":\"VIDEO\",\"streamWidth\":300," +
+      "\"streamHeight\":162,\"userId\":1640,\"nickname\":\"cembern_caroldya\"," +
+      "\"fullName\":\"Cembern Caroldya\",\"avatar\":null,\"videoSettings\":{\"geo\":null}," +
+      "\"viewCount\":\"0\",\"tags\":[],\"chatId\":40,\"videoCover\":{\"width\":null," +
+      "\"height\":null,\"mediaId\":null,\"createTime\":null,\"streamType\":null," +
+      "\"updateTime\":null},\"streamMediaUrl\":\"https:\\/\\/streamMediaUrl.webka.com\\/hls\\/vod\\/40" +
+      ".mp4\\/index.m3u8\",\"isGeoBlocked\":false,\"hasAccessLimit\":false,\"hasAccess\":true," +
+      "\"hasAccessFree\":true,\"isBanned\":false,\"waitingAirFinished\":null}";
 
   /** Translation id. */
   public final String id;
+
+  /** Room Id. */
+  public final long roomId;
 
   /** Session id. */
   public final String sessionId;
@@ -88,10 +91,10 @@ public final class Translation {
   public final int streamHeight;
 
   /** Time stamp. */
-  public final String time;
+  public final String startTime;
 
   /** Media stream. */
-  public final String media;
+  public final String streamMediaUrl;
 
   /** Media stream id. */
   public final int streamMediaId;
@@ -115,26 +118,27 @@ public final class Translation {
    */
   private Translation(JSONObject json, String covers) {
     id = Json.getString(json, "translationId");
+    roomId = Json.getLong(json, "roomId");
     sessionId = Json.getString(json, "sessionId");
     chatId = Json.getInteger(json, "chatId");
     name = Json.getString(json, "translationName");
     description = Json.getString(json, "translationDescription");
-    userNickName = Json.getString(json, "nickname");
+    userNickName = Json.optString(json, "nickname").orElse("NO_NICKNAME");
     userFullName = Json.getString(json, "fullName");
     viewCount = Json.getString(json, "viewCount");
-    time = Json.getString(json, "startTime");
+    startTime = Json.getString(json, "startTime");
     pagingOffset = Json.optInteger(json, "pageOffset").orElse(-1);
-    media = Json.getString(json, "streamMediaUrl");
+    streamMediaUrl = Json.optString(json, "streamMediaUrl").orElse(null);
 
     //try {
-      //final String url = requireNonNull(json.getString("streamMediaUrl"), json::toString)
-        /*.replace("10.10.0.8", "s1.rtt.space").replace("http", "https")*/
-    //media = "null".equals(url) ? "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8" : url;
-      //media = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_adv_example_hevc/v3/prog_index.m3u8";
-      //media = "http://online.video.rbc.ru/online/rbctv_480p/index.m3u8";
-      //media = "https://strm.yandex.ru/kal/1hd/1hd0_169_480p.json/index-v1-a1.m3u8";
+    //final String url = requireNonNull(json.getString("streamMediaUrl"), json::toString)
+    /*.replace("10.10.0.8", "s1.rtt.space").replace("http", "https")*/
+    //streamMediaUrl = "null".equals(url) ? "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8" : url;
+    //streamMediaUrl = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_adv_example_hevc/v3/prog_index.m3u8";
+    //streamMediaUrl = "http://online.video.rbc.ru/online/rbctv_480p/index.m3u8";
+    //streamMediaUrl = "https://strm.yandex.ru/kal/1hd/1hd0_169_480p.json/index-v1-a1.m3u8";
     /*} catch (JSONException e) {
-      media = null;
+      streamMediaUrl = null;
     }*/
 
     streamWidth = Json.optInteger(json, "streamWidth").orElse(-1);
@@ -147,7 +151,7 @@ public final class Translation {
   }
 
   /**
-   * @param json json array
+   * @param json   json array
    * @param covers covers url
    *
    * @return set of translations
@@ -166,6 +170,7 @@ public final class Translation {
     final Translation translation = (Translation) obj;
     return mHash == translation.mHash &&
       Objects.equals(sessionId, translation.sessionId) &&
+      Objects.equals(roomId, translation.roomId) &&
       Objects.equals(chatId, translation.chatId) &&
       Objects.equals(name, translation.name) &&
       Objects.equals(description, translation.description) &&
@@ -175,8 +180,8 @@ public final class Translation {
       Objects.equals(streamWidth, translation.streamWidth) &&
       Objects.equals(streamHeight, translation.streamHeight) &&
       Objects.equals(streamMediaId, translation.streamMediaId) &&
-      Objects.equals(time, translation.time) &&
-      Objects.equals(media, translation.media)
+      Objects.equals(startTime, translation.startTime) &&
+      Objects.equals(streamMediaUrl, translation.streamMediaUrl)
       ;
   }
 
@@ -199,8 +204,8 @@ public final class Translation {
       ", viewCount='" + viewCount + '\'' +
       ", streamWidth=" + streamWidth +
       ", streamHeight=" + streamHeight +
-      ", time='" + time + '\'' +
-      ", media='" + media + '\'' +
+      ", startTime='" + startTime + '\'' +
+      ", streamMediaUrl='" + streamMediaUrl + '\'' +
       ", streamMediaId=" + streamMediaId +
       ", pagingOffset=" + pagingOffset +
       ", cover='" + cover + '\'' +
@@ -212,6 +217,15 @@ public final class Translation {
   private String getRandomImageUrl(int pagingOffset) {
     pagingOffset += 10;
     return "https://picsum.photos/id/" + pagingOffset + "/600/800";
+  }
+
+  public static Mono<Translation> start(Client client, int systemTagId, String name) {
+    return Mono.from(client.post("translation", "status", "ONLINE", "type", "PUBLIC","systemTagId", systemTagId, "name", name))
+      .map(Json::object).map(jsonObject -> new Translation(jsonObject, client.storage("1")));
+  }
+
+  public static Mono<String> stop(Client client, long roomId, String translationId){
+    return Mono.from(client.put("translation/stop", "roomId", roomId, "translationId", translationId));
   }
 
   public static Mono<Translation> bySessionId(Client client, String sessionId) {

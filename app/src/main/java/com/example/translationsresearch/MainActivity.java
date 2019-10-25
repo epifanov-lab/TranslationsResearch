@@ -1,29 +1,27 @@
 package com.example.translationsresearch;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.view.TextureView;
-import android.view.ViewGroup;
-
-import com.example.translationsresearch.service.TranslationService;
 import com.example.translationsresearch.utils.Utils;
 import com.webka.sdk.data.DataSources;
 import com.webka.sdk.data.LocalStorage;
-import com.webka.sdk.players.WebkaPlayer;
+import com.webka.sdk.players.WebkaPlayerFactory;
 import com.webka.sdk.players.WebkaPlayers;
-import com.webka.sdk.schedulers.Schedulers;
+import com.webka.sdk.webrtc.WebRTC;
 
-import java.util.function.BiFunction;
+
+import org.webrtc.ContextUtils;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
-import reactor.core.publisher.Mono;
 import ru.realtimetech.webka.client.Client;
 
 @Module
@@ -31,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
   public static final String KEY_SESSION_ID = "key_session_id";
   public static final String KEY_TRANSLATION = "key_translation";
+
+  private WebRTC.Factory mWebRTC;
 
   /** MainActivity Injector. */
   public final Injector mInjector =
@@ -46,21 +46,36 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.translations_root);
     mRoot = findViewById(R.id.root);
+
+    ContextUtils.initialize(context());
+    mWebRTC = mInjector.webrtc();
   }
 
   @Override
   protected void onResume() {
     super.onResume();
     mRoot.removeAllViews();
-    Utils.createViewWithArgs(this,
-      mRoot, R.layout.translations_lobby,
-      KEY_SESSION_ID, "3Lf2FHPW2fE"); //"3Lf2FHPW2fE"
+
+    goPublish();
+  }
+
+  private void goPublish() {
+    Utils.createViewWithArgs(this, mRoot,
+      R.layout.translations_start);
+  }
+
+  private void goPreview() {
+    Utils.createViewWithArgs(this, mRoot,
+      R.layout.translations_lobby,
+      KEY_SESSION_ID, "3Lf2FHPW2fW");
   }
 
   @Override
   public Object getSystemService(@NonNull String name) {
     if (TranslationService.NAME.equals(name)) return mInjector.translations();
-    if ("webka.player".equals(name)) return mInjector.webkaPlayer();
+    if (PublishingService.NAME.equals(name)) return mInjector.publishing();
+    if (WebkaPlayerFactory.NAME.equals(name)) return mInjector.players();
+    if (WebRTC.NAME.equals(name)) return mWebRTC;
     else return super.getSystemService(name);
   }
 
@@ -99,6 +114,13 @@ public class MainActivity extends AppCompatActivity {
     );
   }
 
+  @Override
+  protected void onDestroy() {
+    mWebRTC.close();
+    mWebRTC = null;
+    super.onDestroy();
+  }
+
   /** Application activity. */
   @Component(modules = {MainActivity.class, DataSources.class, WebkaPlayers.class})
   @Singleton
@@ -107,7 +129,9 @@ public class MainActivity extends AppCompatActivity {
     public abstract Client client();
     public abstract LocalStorage storage();
     public abstract TranslationService translations();
-    public abstract BiFunction<String, TextureView, Mono<WebkaPlayer>> webkaPlayer();
+    public abstract PublishingService publishing();
+    public abstract WebkaPlayerFactory players();
+    public abstract WebRTC.Factory webrtc();
   }
 
 }

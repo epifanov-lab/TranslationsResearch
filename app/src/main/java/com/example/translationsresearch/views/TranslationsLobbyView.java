@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.translationsresearch.R;
-import com.example.translationsresearch.entity.Translation;
-import com.example.translationsresearch.service.TranslationService;
+import com.example.translationsresearch.Translation;
+import com.example.translationsresearch.TranslationService;
 import com.example.translationsresearch.utils.Utils;
 import com.webka.sdk.schedulers.Schedulers;
 
@@ -27,7 +27,7 @@ import static com.example.translationsresearch.MainActivity.KEY_TRANSLATION;
  */
 public class TranslationsLobbyView extends FrameLayout {
 
-  private final TranslationService mService;
+  private final TranslationService mTranslationService;
   private final String sessionId;
 
   private TextView mLabel;
@@ -50,7 +50,7 @@ public class TranslationsLobbyView extends FrameLayout {
   @SuppressWarnings("OptionalGetWithoutIsPresent")
   public TranslationsLobbyView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
-    mService = TranslationService.obtain(context).get();
+    mTranslationService = TranslationService.obtain(context).get();
     sessionId = Utils.getContextArg(context, KEY_SESSION_ID);
   }
 
@@ -81,7 +81,11 @@ public class TranslationsLobbyView extends FrameLayout {
 
     updateViewsState();
 
-    return mService.getTranslationBySessionId(sessionId)
+    /*return mTranslationService.startTranslation(1, "android_translation_start_test")
+      .transform(Schedulers::work_main)
+      .subscribe(this::replace, this::onError);*/
+
+    return mTranslationService.getTranslationBySessionId(sessionId)
       .transform(Schedulers::work_main)
       .subscribe(this::replace, this::onError);
   }

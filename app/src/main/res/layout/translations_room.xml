@@ -15,7 +15,7 @@
         android:textColor="#fff"
         android:textSize="30sp" />
 
-    <com.example.translationsresearch.views.playertextureview.PlayerTextureView
+    <com.webka.sdk.players.view.PlayerTextureView
         android:id="@+id/texture"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
@@ -28,6 +28,7 @@
         android:text="ROOM"
         android:textSize="16sp"
         android:layout_gravity="bottom"
-        android:textColor="#00FAE5"/>
+        android:textColor="#00FAE5"
+        android:visibility="gone"/>
 
 </com.example.translationsresearch.views.TranslationsRoomView>

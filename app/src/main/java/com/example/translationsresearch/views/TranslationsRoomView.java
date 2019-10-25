@@ -6,7 +6,6 @@ import android.graphics.ImageDecoder;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -15,8 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.example.translationsresearch.R;
-import com.example.translationsresearch.entity.Translation;
-import com.example.translationsresearch.service.TranslationService;
+import com.example.translationsresearch.Translation;
+import com.example.translationsresearch.TranslationService;
 import com.example.translationsresearch.utils.Utils;
 
 import java.io.IOException;
@@ -25,7 +24,6 @@ import java.io.UncheckedIOException;
 import reactor.core.Disposable;
 
 import static com.example.translationsresearch.MainActivity.KEY_TRANSLATION;
-import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 /**
  * @author Konstantin Epifanov
@@ -33,7 +31,7 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
  */
 public class TranslationsRoomView extends FrameLayout {
 
-  private final TranslationService mService;
+  private final TranslationService mTranslationService;
   private final Translation mTranslation;
 
   private Disposable mDisposable;
@@ -52,15 +50,24 @@ public class TranslationsRoomView extends FrameLayout {
 
   public TranslationsRoomView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
-    mService = TranslationService.obtain(context).get();
+    mTranslationService = TranslationService.obtain(context).get();
     mTranslation = Utils.getContextArg(context, KEY_TRANSLATION);
+
+    /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      setForegroundGravity(Gravity.CENTER);
+    final Resources resources = getResources();
+    final int resource = R.drawable.output_lossy;
+      CompletableFuture.supplyAsync(() -> load(resources, resource))
+        .thenAcceptAsync(this::setForeground, this::post);
+      this.postDelayed(() -> ((AnimatedImageDrawable)this.getForeground()).start(), 1000);
+    }*/
   }
 
   @Override
   protected void onFinishInflate() {
     super.onFinishInflate();
     ((TextView) findViewById(R.id.label_result)).setText(mTranslation.toString());
-    findViewById(R.id.texture).setTag(mTranslation.media);
+    findViewById(R.id.texture).setTag(mTranslation.streamMediaUrl);
   }
 
   @Override
@@ -72,15 +79,6 @@ public class TranslationsRoomView extends FrameLayout {
       // mDisposable = start();
     }
   }
-
-  /*
-    setForegroundGravity(Gravity.CENTER);
-    final Resources resources = getResources();
-    final int resource = R.drawable.output;
-    supplyAsync(() -> load(resources, resource))
-      .thenAcceptAsync(this::setForeground, this::post);
-    this.postDelayed(() -> ((AnimatedImageDrawable)this.getForeground()).start(), 1000);
-  * */
 
   @RequiresApi(api = Build.VERSION_CODES.P)
   private static AnimatedImageDrawable load(Resources resources, int resource) {
