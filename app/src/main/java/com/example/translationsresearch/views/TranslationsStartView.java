@@ -11,17 +11,18 @@ import androidx.annotation.Nullable;
 
 import com.example.translationsresearch.PublishingService;
 import com.example.translationsresearch.R;
+import com.example.translationsresearch.Translation;
+import com.example.translationsresearch.utils.Json;
 import com.webka.sdk.schedulers.Schedulers;
 import com.webka.sdk.webrtc.WebRTC;
+import com.webka.sdk.webrtc.WebRTCCapturer;
 import com.webka.sdk.webrtc.WebRTCConnection;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.concurrent.CompletableFuture;
 
 import reactor.core.CoreSubscriber;
 import reactor.core.Disposable;
+import reactor.core.Disposables;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuple3;
@@ -60,7 +61,7 @@ public class TranslationsStartView extends FrameLayout {
     mPublishingService = PublishingService.obtain(context).get();
 
     mWebRTC = WebRTC.from(context);
-    System.out.println("WEBRTC: " + mWebRTC);
+    //System.out.println("WEBRTC: " + mWebRTC);
   }
 
   @Override
@@ -83,38 +84,58 @@ public class TranslationsStartView extends FrameLayout {
 
     if (isVisible && mDisposable == null) {
       mDisposable = start();
+      //mDisposable = Disposables.disposed();
     }
   }
 
   private Disposable start() {
+
+    final WebRTCCapturer capturer = mWebRTC.capturer();
+
+    final Disposable.Swap swap = Disposables.swap();
+
     updateViewsState("START", false);
-    return mPublishingService.startTranslation(TAG_CHIPS, "android_publishing _test")
-      .flatMap(translation ->
-          mPublishingService.msCreateSession(true, translation.roomId)
-            .flatMap(this::webrtc)
 
-            //return mPublishingService.msOffer(true, d.getT1(), d.getT2(), d.getT3());
+    final Translation[] translations = new Translation[1];
 
-          //.flatMap(s -> mPublishingService.stopTranslation(translation.id, translation.roomId))
+    return Disposables.composite(
 
-      )
+      mPublishingService.startTranslation(TAG_CHIPS, "android_publishing _test_" + System.currentTimeMillis())
+        .flatMap(translation -> {
+            translations[0] = translation;
+            return mPublishingService.msCreateSession(true, translation.roomId)
+              .flatMap(this::webrtc);
+          }
 
-      .transform(Schedulers::work_main)
-      .subscribe(
-        s -> System.out.println("ANSWER: " + s),
-        t -> updateViewsState("error: " + t.getMessage(), true));
+          //.flatMap(d -> mPublishingService.msOffer(true, d.getT1(), d.getT2(), d.getT3(), null))
+          //return mPublishingService.msOffer(true, d.getT1(), d.getT2(), d.getT3());
+        )
+
+        .transform(Schedulers::work_main)
+        .subscribe(
+          s -> {} /*s -> System.out.println("WEBRTC CONNECTED @%^$^@$#^@$#^%@: " + s)*/,
+
+          t -> updateViewsState("error: " + t.getMessage(), true),
+
+          () -> System.out.println("WEBRTC CONNECTED @%^$^@$#^@$#^%@: ")),
+
+
+      () -> mPublishingService.stopTranslation(translations[0].roomId, translations[0].id).subscribe()
+
+    );
   }
 
   public final Mono<Void> webrtc(@NonNull Tuple3<Long, Long, String> tuple) {
 
     final WebRTC.Session session = new WebRTC.Session(tuple);
 
-    final Tuple2<CompletableFuture<WebRTC.SDP>,
-      CoreSubscriber<WebRTC.SDP>> answer = reactor.core.publisher.PublisherUtils.monoFuture();
+    final Tuple2<CompletableFuture<WebRTC.SDP>, CoreSubscriber<WebRTC.SDP>>
+      answer = reactor.core.publisher.PublisherUtils.monoFuture();
+
     final CompletableFuture<WebRTC.SDP> get = answer.getT1();
     final CoreSubscriber<WebRTC.SDP> set = answer.getT2();
 
-    final WebRTCConnection connection = mWebRTC.connection (
+    final WebRTCConnection connection = mWebRTC.connection(
       true,
       get::join,                    /// дождаться ансвер от мс и заакцептить в пеер кон
       v -> offer(session, set, v),  /// пеерконнекшн зарегал сдп и отдал мне и я отпр на мс офер
@@ -126,6 +147,7 @@ public class TranslationsStartView extends FrameLayout {
     return Mono.create(sink -> sink
       .onCancel(connection::release)
       .success(connection.connect()))
+      .doOnNext(o -> System.out.println("CONNECTION CONNECT ^*%*&@%^%#^&#%@"))
       .transform(Schedulers::io_work)
       .then();
   }
@@ -135,67 +157,39 @@ public class TranslationsStartView extends FrameLayout {
    * @param subscriber answer subscriber
    * @param sdp        offer sdp
    */
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
   private void offer
   (@NonNull WebRTC.Session session,
    @NonNull CoreSubscriber<WebRTC.SDP> subscriber,
    @NonNull WebRTC.SDP sdp) {
     System.out.println("PublishingService.offer");
-
-    try {
-      JSONObject jsep = new JSONObject().put("type", sdp.type).put("sdp", sdp.description);
-      mPublishingService.msOffer(true, session.roomId, session.mediaId, session.mediaIdSign, jsep)
-        .log()
-        .cast(JSONObject.class)
-        .map(WebRTC.SDP::just)
-        .subscribeWith(subscriber);
-
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    /*mSocket.sendAndWait("ms_add", body -> body
-      .put("isHoster", true)
-      .put("mediaId", session.mediaId)
-      .put("mediaIdSign", session.mediaIdSign)
-      .put("msSessionId", session.sessionId)
-      .put("handlerId", session.handlerId)
-      .put("jsep", new JSONObject()
-        .put("type", sdp.type)
-        .put("sdp", sdp.description)
-      ), "answer", "jsep")
-      .cast(JSONObject.class)
+    mPublishingService.msOffer(session, sdp)
+      .log()
+      .map(Json::array)
+      .map(arr -> Json.getObject(arr, 0))
+      .map(obj -> Json.getObject(obj, "jsep").get())
       .map(WebRTC.SDP::just)
-      .subscribeWith(subscriber);*/
+      .subscribeWith(subscriber);
   }
-
 
   /**
    * @param session media session
    * @param ice     sent ice candidate
    */
-  private void ice(WebRTC.Session session, WebRTC.ICE ice) {
-    System.out.println("PublishingService.ice");
-    /*mSocket.command("ms_candidate", body -> body
-      .put("isHoster", true)
-      .put("mediaId", session.mediaId)
-      .put("mediaIdSign", session.mediaIdSign)
-      .put("msSessionId", session.sessionId)
-      .put("handlerId", session.handlerId)
-      .put("candidate", new JSONObject()
-        .put("candidate", ice.sdp)
-        .put("sdpMLineIndex", ice.index)
-        .put("sdpMid", String.valueOf(ice.index))
-      )
-    ).block();*/
+  private Void ice(WebRTC.Session session, WebRTC.ICE ice) {
+    System.out.println("PublishingService.ice: " + ice);
+    return mPublishingService.msCandidate(session, ice).then().block();
   }
 
   /** @param session media session */
   @SuppressWarnings("unused")
-  private void ice(WebRTC.Session session) {}
+  private void ice(WebRTC.Session session) {
+  }
 
   /** @param media media pair */
   @SuppressWarnings("unused")
-  private void media(WebRTC.Session session, WebRTC.MediaPair media) {}
+  private void media(WebRTC.Session session, WebRTC.MediaPair media) {
+  }
 
   private void updateViewsState(String text, boolean isError) {
     mLabel.setText(text);
