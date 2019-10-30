@@ -33,10 +33,59 @@ import ru.realtimetech.webka.client.Client;
  * Translation structure.
  *
  * @author Gleb Nikitenko
+ * @author Konstantin Epifanov
  * @since 10.04.19
  */
 @SuppressWarnings("WeakerAccess")
 public final class Translation {
+
+  /*private static final String[] HLS = {
+    "https://rt-news-gd.secure2.footprint.net/1103_2500Kb.m3u8",
+    "http://lb.streaming.sk/fashiontv/stream/playlist.m3u8",
+    "http://dtv.ercdn.net/adsport1/adsport1_720p.m3u8",
+    "http://mdslivehlsb-i.akamaihd.net/hls/live/623617/energy/bitrate_4.m3u8",
+    "http://62.76.26.81:8081/hdmedia/menu/playlist.m3u8",
+    "http://weather-lh.akamaihd.net/i/twc_1@92006/master",
+    "http://stream.grupoabchn.com:1935/TENHD/TENLive.smil/master",
+    "http://lb.streaming.sk/fashiontv/stream/playlist.m3u8",
+    "http://dtv.ercdn.net/adsport1/adsport1_720p.m3u8",
+    "http://mdslivehlsb-i.akamaihd.net/hls/live/623617/energy/bitrate_4.m3u8",
+    "http://62.76.26.81:8081/hdmedia/menu/playlist.m3u8",
+  };*/
+
+  private static final String[] HLS = {
+    "https://rt-news-gd.secure2.footprint.net/1103_2500Kb.m3u8",
+    "https://mdslivehlsb-i.akamaihd.net/hls/live/623617/energy/bitrate_1.m3u8",
+    "http://1mstream.digicable.hu/hitmusic/hitmusic.m3u8",
+    "http://ss6.domint.net:2082/202_str/orbittv/media_w29206476_playlist.m3u8",
+    "http://livestreamcdn.net:1935/ExtremaTV/ExtremaTV/playlist.m3u8",
+    "http://locomotiontv.com/envivo/loco_channel/stream.m3u8?xtreamiptv.m3u8",
+    "http://mdslivehlsb-i.akamaihd.net/hls/live/623616/boing/bitrate_2.m3u8",
+    "http://dwstream3-lh.akamaihd.net/i/dwstream3_live@124409/index_5_av-p.m3u8?sd=10&rebase=on",
+    "http://100automoto.tv:1935/bgtv1/autotv/playlist.m3u8",
+    "http://59f1cbe63db89.streamlock.net:1935/dgrau/_definst_/dgrau/playlist.m3u8",
+    "http://cdnlive.shooowit.net/rbetislive/smil:television.smil/playlist.m3u8",
+    "http://svs.itworkscdn.net/ktvsportslive/ksports.smil/chunklist.m3u8",
+    "http://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
+    "http://tv-topshop.netrack.ru/hls/topshop.m3u8",
+    "http://unilivemtveu-lh.akamaihd.net/i/mtvno_1@346424/master.m3u8",
+    "http://81.30.182.82:18092/hls/live.m3u8",
+    "http://bbcwshdlive01-lh.akamaihd.net/i/ptv_1@78015/master.m3u8",
+    "http://evpp.mm.uol.com.br/ne10/ne10.smil/playlist.m3u8",
+    "http://c2.manasat.com:1935/tserkov-online/russo3/playlist.m3u8",
+    "http://rt-usa.secure.footprint.net/1105.m3u8",
+    "http://rt-uk.secure.footprint.net/1106.m3u8",
+    "http://livebeta.publika.md/LIVE/P/1500.m3u8",
+    "http://ivebeta.publika.md/LIVE/P/1500.m3u8",
+    "http://cdn1.live-tv.od.ua:8081/1tvkr/1tvkr-abr/1tvkr/1tvkr/playlist.m3u8",
+    "http://rfe-lh.akamaihd.net/i/rfe_tvmc5@383630/master.m3u8",
+    "http://cdn-01.bonus-tv.ru:8080/kriktv_edge/index.m3u8",
+    "",
+    "",
+    "",
+    "",
+    "",
+  };
 
   /** Stub translation */
   public static final String STUB =
@@ -53,7 +102,7 @@ public final class Translation {
       "\"fullName\":\"Cembern Caroldya\",\"avatar\":null,\"videoSettings\":{\"geo\":null}," +
       "\"viewCount\":\"0\",\"tags\":[],\"chatId\":40,\"videoCover\":{\"width\":null," +
       "\"height\":null,\"mediaId\":null,\"createTime\":null,\"streamType\":null," +
-      "\"updateTime\":null},\"streamMediaUrl\":\"https:\\/\\/streamMediaUrl.webka.com\\/hls\\/vod\\/40" +
+      "\"updateTime\":null},\"streamMediaUrl\":\"https:\\/\\/media.webka.com\\/hls\\/vod\\/40" +
       ".mp4\\/index.m3u8\",\"isGeoBlocked\":false,\"hasAccessLimit\":false,\"hasAccess\":true," +
       "\"hasAccessFree\":true,\"isBanned\":false,\"waitingAirFinished\":null}";
 
@@ -226,6 +275,11 @@ public final class Translation {
 
   public static Mono<String> stop(Client client, long roomId, String translationId){
     return Mono.from(client.put("translation/stop", "roomId", roomId, "translationId", translationId));
+  }
+
+
+  public static Mono<String> delete(Client client, String translationId){
+    return Mono.from(client.delete("translation","translationId", translationId));
   }
 
   public static Mono<Translation> bySessionId(Client client, String sessionId) {

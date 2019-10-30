@@ -10,6 +10,7 @@ import com.webka.sdk.webrtc.WebRTC;
 import org.json.JSONObject;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -44,13 +45,16 @@ public class PublishingService {
       .map(o -> (PublishingService) o);
   }
 
-
   public Mono<Translation> startTranslation(int systemTagId, String name) {
     return Translation.start(mClient, systemTagId, name);
   }
 
   public Mono<String> stopTranslation(long roomId, String translationId) {
     return Translation.stop(mClient, roomId, translationId);
+  }
+
+  public Mono<String> deleteTranslation(String translationId) {
+    return Translation.delete(mClient, translationId);
   }
 
   public Mono<Tuple3<Long, Long, String>> msCreateSession(boolean isHoster, long roomId) {
@@ -80,7 +84,10 @@ public class PublishingService {
     ).toString();
 
     return Mono.from(mClient.command("ms_offer", params))
-      .then(Flux.from(mClient.events("media_server_event")).next());
+      .then(Flux.from(mClient.events("media_server_event")).next()
+      .doOnSuccess(s ->
+        Flux.from(mClient.events("media_server_start"))
+        .log().subscribe()));
   }
 
   public Mono<String> msCandidate(WebRTC.Session session, WebRTC.ICE ice) {
@@ -98,9 +105,6 @@ public class PublishingService {
 
     return Mono.from(mClient.command("ms_candidate", params));
   }
-
-  //  42["command",{"name":"ms_create_session","commandId":1,"isHoster":true,"roomId":7733247237752183,"hosterMediaId":null,"windowId":"28f4026c-2f30-4b31-8e02-6f400a363178"}]
-  //  42["command",{"name":"ms_create_session","commandId":3423744902,"hosterMediaId":null,"roomId":8194637177757622,"isHoster":true,"windowId":"8d75096f-9088-453a-80f7-bc04a878a79a"}]
 
   public Mono<String> msDestroy(boolean isHoster, String mediaId, String mediaIdSign) {
     String params = Json.newJson(body -> body

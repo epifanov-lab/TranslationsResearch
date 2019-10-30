@@ -94,150 +94,159 @@ public class MainActivity extends AppCompatActivity {
     return new DataSources.Config(
       BuildConfig.DEBUG,
       BuildConfig.VERSION_CODE,
-      /*"{\n" +
-        "        \"www\": {\n" +
-        "      \"domain\": \"https://www-b45d2a81e8e0.sandbox.rtt.space/\"\n" +
-        "    },\n" +
-        "    \"api\": {\n" +
-        "      \"env\": \"integration\",\n" +
-        "        \"secret\": \"69a39612c583bf149a3371d980c1a44f\",\n" +
-        "        \"connect\": \"https://api-b45d2a81e8e0.sandbox.rtt.space\",\n" +
-        "        \"apipath\": \"/api/v1/\",\n" +
-        "        \"admpath\": \"/admin/v1/\",\n" +
-        "        \"partnerpath\": \"/partner/v1/\",\n" +
-        "        \"cookie_domain\": \".sandbox.rtt.space\",\n" +
-        "        \"log\": {\n" +
-        "        \"stdout\": 1,\n" +
-        "          \"directory\": \"/var/www/log/\"\n" +
-        "      }\n" +
-        "    },\n" +
-        "    \"api_local\": {\n" +
-        "      \"connect\": \"http://api-b45d2a81e8e0.sandbox.rtt.space:81\"\n" +
-        "    },\n" +
-        "    \"promo\": {\n" +
-        "      \"domain\": \"https://promo-b45d2a81e8e0.sandbox.rtt.space\",\n" +
-        "        \"preview_domain\": \"https://promo-b45d2a81e8e0.sandbox.rtt.space\",\n" +
-        "        \"live_banner_cache_time\": 5,\n" +
-        "        \"clickunder_cache_time\": 5\n" +
-        "    },\n" +
-        "    \"user-counters\": {\n" +
-        "      \"connect\": \"http://user-counters-b45d2a81e8e0.sandbox.rtt.space\",\n" +
-        "        \"database\": {\n" +
-        "        \"connect\": \"mysql:dbname=webka_counters\",\n" +
-        "          \"username\": \"root\",\n" +
-        "          \"password\": \"\"\n" +
-        "      },\n" +
-        "      \"log\": {\n" +
-        "        \"directory\": \"/var/www/log/\"\n" +
-        "      }\n" +
-        "    },\n" +
-        "    \"resource_manager\": {\n" +
-        "      \"connect\": \"http://resource-manager-b45d2a81e8e0.sandbox.rtt.space:9000\"\n" +
-        "    },\n" +
-        "    \"resource_manager_db\": {\n" +
-        "      \"dbname\": \"webka_resource_manager\",\n" +
-        "        \"host\": \"resource-manager-db-b45d2a81e8e0.sandbox.rtt.space\",\n" +
-        "        \"port\": \"5432\",\n" +
-        "        \"user\": \"webka_resource_manager\"\n" +
-        "    },\n" +
-        "    \"storage\": {\n" +
-        "      \"domain\": \"https://storage-b45d2a81e8e0.sandbox.rtt.space\",\n" +
-        "        \"api\": \"http://10.33.81.21:81\"\n" +
-        "    },\n" +
-        "    \"media_server\": {\n" +
-        "      \"cluster_id\": \"86008303\",\n" +
-        "        \"manager_node\": \"http://ms-manager-node-b45d2a81e8e0.sandbox.rtt.space\",\n" +
-        "        \"media_domain\": \"https://ms-rhls-node-b45d2a81e8e0.sandbox.rtt.space/\"\n" +
-        "    },\n" +
-        "    \"ws_transport\": {\n" +
-        "      \"env\": \"integration\",\n" +
-        "        \"connect\": \"https://{{WSTRANSPORT}}\",\n" +
-        "        \"port\": 9091,\n" +
-        "        \"path\": \"/wss\",\n" +
-        "        \"ping-interval\": 15000,\n" +
-        "        \"ping-timeout\": 15000,\n" +
-        "        \"log\": {\n" +
-        "        \"directory\": \"/var/www/log/\"\n" +
-        "      }\n" +
-        "    },\n" +
-        "    \"ws_router\": {\n" +
-        "      \"env\": \"integration\",\n" +
-        "        \"connect\": \"https://ws-router-b45d2a81e8e0.sandbox.rtt.space\",\n" +
-        "        \"port\": 9091,\n" +
-        "        \"path\": \"/wss\",\n" +
-        "        \"ping-interval\": 15000,\n" +
-        "        \"ping-timeout\": 15000,\n" +
-        "        \"log\": {\n" +
-        "        \"directory\": \"/var/www/log/\"\n" +
-        "      }\n" +
-        "    },\n" +
-        "    \"support_chat\": {\n" +
-        "      \"connect\": \"https://support-chat-b45d2a81e8e0.sandbox.rtt.space\",\n" +
-        "        \"admin_url\": \"https://admin-b45d2a81e8e0.sandbox.rtt.space\"\n" +
-        "    },\n" +
-        "    \"monitoring\": {\n" +
-        "      \"connect\": \"https://support-monitoring-b45d2a81e8e0.sandbox.rtt.space\",\n" +
-        "        \"admin_url\": \"https://admin-b45d2a81e8e0.sandbox.rtt.space\"\n" +
-        "    },\n" +
-        "    \"redis\": {\n" +
-        "      \"host\": \"10.33.81.18\",\n" +
-        "        \"port\": 6379,\n" +
-        "        \"password\": \"\"\n" +
-        "    },\n" +
-        "    \"amqp\": {\n" +
-        "      \"connect\": \"amqp://guest:guest@10.33.81.4\"\n" +
-        "    },\n" +
-        "    \"api_db_master\": {\n" +
-        "      \"dbname\": \"webka_api\",\n" +
-        "        \"host\": \"10.33.81.7\",\n" +
-        "        \"port\": \"5432\",\n" +
-        "        \"user\": \"webka_api\"\n" +
-        "    },\n" +
-        "    \"admin_db_master\": {\n" +
-        "      \"dbname\": \"webka_admin\",\n" +
-        "        \"host\": \"10.33.81.3\",\n" +
-        "        \"port\": \"5432\",\n" +
-        "        \"user\": \"webka_admin\"\n" +
-        "    },\n" +
-        "    \"partners_db_master\": {\n" +
-        "      \"dbname\": \"webka_partners\",\n" +
-        "        \"host\": \"10.33.81.16\",\n" +
-        "        \"port\": \"5432\",\n" +
-        "        \"user\": \"webka_partners\"\n" +
-        "    },\n" +
-        "    \"analytic_db\": {\n" +
-        "      \"dbname\": \"analytics_db\",\n" +
-        "        \"host\": \"10.33.81.5\",\n" +
-        "        \"port\": \"8123\",\n" +
-        "        \"native_port\": \"9000\",\n" +
-        "        \"user\": \"default\",\n" +
-        "        \"password\": \"\"\n" +
-        "    },\n" +
-        "    \"external_service\": {\n" +
-        "      \"log\": {\n" +
-        "        \"path\": \"/var/www/log/external/\"\n" +
-        "      },\n" +
-        "      \"postgres\": {\n" +
-        "        \"timeout\": \"100\"\n" +
-        "      },\n" +
-        "      \"rabbitmq\": {\n" +
-        "        \"timeout\": \"100\"\n" +
-        "      },\n" +
-        "      \"redis\": {\n" +
-        "        \"timeout\": \"100\"\n" +
-        "      },\n" +
-        "      \"clickhouse\": {\n" +
-        "        \"timeout\": \"1000\"\n" +
-        "      },\n" +
-        "      \"curl\": {\n" +
-        "        \"timeout\": \"200\"\n" +
-        "      },\n" +
-        "      \"mariadb\": {\n" +
-        "        \"timeout\": \"100\"\n" +
-        "      }\n" +
-        "    }\n" +
-        "}",*/
       "{\n" +
+        "\t\"www\": {\n" +
+        "\t\t\"domain\": \"https://www-075dffd2a583.sandbox.rtt.space/\",\n" +
+        "\t\t\"stun\": [\n" +
+        "\t\t\t\"stun.l.google.com:19302\"\n" +
+        "\t\t],\n" +
+        "\t\t\"turn\": [\n" +
+        "\t\t\t\"udp://rtt:rttpass@95.211.25.98:3478\",\n" +
+        "\t\t\t\"tcp://rtt:rttpass@95.211.25.98:3478\"\n" +
+        "\t\t]\n" +
+        "\t},\n" +
+        "\t\"api\": {\n" +
+        "\t\t\"env\": \"integration\",\n" +
+        "\t\t\"secret\": \"69a39612c583bf149a3371d980c1a44f\",\n" +
+        "\t\t\"connect\": \"https://api-075dffd2a583.sandbox.rtt.space\",\n" +
+        "\t\t\"apipath\": \"/api/v1/\",\n" +
+        "\t\t\"admpath\": \"/admin/v1/\",\n" +
+        "\t\t\"partnerpath\": \"/partner/v1/\",\n" +
+        "\t\t\"cookie_domain\": \".sandbox.rtt.space\",\n" +
+        "\t\t\"log\": {\n" +
+        "\t\t\t\"stdout\": 1,\n" +
+        "\t\t\t\"directory\": \"/var/www/log/\"\n" +
+        "\t\t}\n" +
+        "\t},\n" +
+        "\t\"api_local\": {\n" +
+        "\t\t\"connect\": \"http://api-075dffd2a583.sandbox.rtt.space:81\"\n" +
+        "\t},\n" +
+        "\t\"promo\": {\n" +
+        "\t\t\"domain\": \"https://promo-075dffd2a583.sandbox.rtt.space\",\n" +
+        "\t\t\"preview_domain\": \"https://promo-075dffd2a583.sandbox.rtt.space\",\n" +
+        "\t\t\"live_banner_cache_time\": 5,\n" +
+        "\t\t\"clickunder_cache_time\": 5,\n" +
+        "\t\t\"clickunder_gallery_cache_time\": 5\n" +
+        "\t},\n" +
+        "\t\"user-counters\": {\n" +
+        "\t\t\"connect\": \"http://user-counters-075dffd2a583.sandbox.rtt.space\",\n" +
+        "\t\t\"database\": {\n" +
+        "\t\t\t\"connect\": \"mysql:dbname=webka_counters\",\n" +
+        "\t\t\t\"username\": \"root\",\n" +
+        "\t\t\t\"password\": \"\"\n" +
+        "\t\t},\n" +
+        "\t\t\"log\": {\n" +
+        "\t\t\t\"directory\": \"/var/www/log/\"\n" +
+        "\t\t}\n" +
+        "\t},\n" +
+        "\t\"resource_manager\": {\n" +
+        "\t\t\"connect\": \"http://resource-manager-075dffd2a583.sandbox.rtt.space:9000\"\n" +
+        "\t},\n" +
+        "\t\"resource_manager_db\": {\n" +
+        "\t\t\"dbname\": \"webka_resource_manager\",\n" +
+        "\t\t\"host\": \"resource-manager-db-075dffd2a583.sandbox.rtt.space\",\n" +
+        "\t\t\"port\": \"5432\",\n" +
+        "\t\t\"user\": \"webka_resource_manager\"\n" +
+        "\t},\n" +
+        "\t\"storage\": {\n" +
+        "\t\t\"domain\": \"https://storage-075dffd2a583.sandbox.rtt.space\",\n" +
+        "\t\t\"api\": \"http://10.30.178.21:81\"\n" +
+        "\t},\n" +
+        "\t\"media_server\": {\n" +
+        "\t\t\"cluster_id\": \"96171610\",\n" +
+        "\t\t\"manager_node\": \"http://ms-manager-node-075dffd2a583.sandbox.rtt.space\",\n" +
+        "\t\t\"media_domain\": \"https://ms-rhls-node-075dffd2a583.sandbox.rtt.space/\",\n" +
+        "\t\t\"ws_domain\": \"wss://ms-ws-node-075dffd2a583.sandbox.rtt.space/\"\n" +
+        "\t},\n" +
+        "\t\"ws_transport\": {\n" +
+        "\t\t\"env\": \"integration\",\n" +
+        "\t\t\"connect\": \"https://{{WSTRANSPORT}}\",\n" +
+        "\t\t\"port\": 9091,\n" +
+        "\t\t\"path\": \"/wss\",\n" +
+        "\t\t\"ping-interval\": 15000,\n" +
+        "\t\t\"ping-timeout\": 15000,\n" +
+        "\t\t\"log\": {\n" +
+        "\t\t\t\"directory\": \"/var/www/log/\"\n" +
+        "\t\t}\n" +
+        "\t},\n" +
+        "\t\"ws_router\": {\n" +
+        "\t\t\"env\": \"integration\",\n" +
+        "\t\t\"connect\": \"https://ws-router-075dffd2a583.sandbox.rtt.space\",\n" +
+        "\t\t\"port\": 9091,\n" +
+        "\t\t\"path\": \"/wss\",\n" +
+        "\t\t\"ping-interval\": 15000,\n" +
+        "\t\t\"ping-timeout\": 15000,\n" +
+        "\t\t\"log\": {\n" +
+        "\t\t\t\"directory\": \"/var/www/log/\"\n" +
+        "\t\t}\n" +
+        "\t},\n" +
+        "\t\"support_chat\": {\n" +
+        "\t\t\"connect\": \"https://support-chat-075dffd2a583.sandbox.rtt.space\",\n" +
+        "\t\t\"admin_url\": \"https://admin-075dffd2a583.sandbox.rtt.space\"\n" +
+        "\t},\n" +
+        "\t\"monitoring\": {\n" +
+        "\t\t\"connect\": \"https://support-monitoring-075dffd2a583.sandbox.rtt.space\",\n" +
+        "\t\t\"admin_url\": \"https://admin-075dffd2a583.sandbox.rtt.space\"\n" +
+        "\t},\n" +
+        "\t\"redis\": {\n" +
+        "\t\t\"host\": \"10.30.178.18\",\n" +
+        "\t\t\"port\": 6379,\n" +
+        "\t\t\"password\": \"\"\n" +
+        "\t},\n" +
+        "\t\"amqp\": {\n" +
+        "\t\t\"connect\": \"amqp://guest:guest@10.30.178.4\"\n" +
+        "\t},\n" +
+        "\t\"api_db_master\": {\n" +
+        "\t\t\"dbname\": \"webka_api\",\n" +
+        "\t\t\"host\": \"10.30.178.7\",\n" +
+        "\t\t\"port\": \"5432\",\n" +
+        "\t\t\"user\": \"webka_api\"\n" +
+        "\t},\n" +
+        "\t\"admin_db_master\": {\n" +
+        "\t\t\"dbname\": \"webka_admin\",\n" +
+        "\t\t\"host\": \"10.30.178.3\",\n" +
+        "\t\t\"port\": \"5432\",\n" +
+        "\t\t\"user\": \"webka_admin\"\n" +
+        "\t},\n" +
+        "\t\"partners_db_master\": {\n" +
+        "\t\t\"dbname\": \"webka_partners\",\n" +
+        "\t\t\"host\": \"10.30.178.16\",\n" +
+        "\t\t\"port\": \"5432\",\n" +
+        "\t\t\"user\": \"webka_partners\"\n" +
+        "\t},\n" +
+        "\t\"analytic_db\": {\n" +
+        "\t\t\"dbname\": \"analytics_db\",\n" +
+        "\t\t\"host\": \"10.30.178.5\",\n" +
+        "\t\t\"port\": \"8123\",\n" +
+        "\t\t\"native_port\": \"9000\",\n" +
+        "\t\t\"user\": \"default\",\n" +
+        "\t\t\"password\": \"\"\n" +
+        "\t},\n" +
+        "\t\"external_service\": {\n" +
+        "\t\t\"log\": {\n" +
+        "\t\t\t\"path\": \"/var/www/log/external/\"\n" +
+        "\t\t},\n" +
+        "\t\t\"postgres\": {\n" +
+        "\t\t\t\"timeout\": \"100\"\n" +
+        "\t\t},\n" +
+        "\t\t\"rabbitmq\": {\n" +
+        "\t\t\t\"timeout\": \"100\"\n" +
+        "\t\t},\n" +
+        "\t\t\"redis\": {\n" +
+        "\t\t\t\"timeout\": \"100\"\n" +
+        "\t\t},\n" +
+        "\t\t\"clickhouse\": {\n" +
+        "\t\t\t\"timeout\": \"1000\"\n" +
+        "\t\t},\n" +
+        "\t\t\"curl\": {\n" +
+        "\t\t\t\"timeout\": \"200\"\n" +
+        "\t\t},\n" +
+        "\t\t\"mariadb\": {\n" +
+        "\t\t\t\"timeout\": \"100\"\n" +
+        "\t\t}\n" +
+        "\t}\n" +
+        "}\n",
+      /*"{\n" +
         "        \"api\": {\n" +
         "      \"connect\": \"https://api.int.rtt.space\",\n" +
         "        \"apipath\": \"/api/v1/\"\n" +
@@ -252,9 +261,8 @@ public class MainActivity extends AppCompatActivity {
         "    \"www\": {\n" +
         "      \"domain\": \"https://int.rtt.space/\"\n" +
         "    }\n" +
-        "}",
-        /*
-        "{\n" +
+        "}",*/
+        /*"{\n" +
         "  \"api\": {\n" +
         "    \"connect\": \"https://api.webka.com\",\n" +
         "     \"apipath\": \"/api/v1/\"\n" +

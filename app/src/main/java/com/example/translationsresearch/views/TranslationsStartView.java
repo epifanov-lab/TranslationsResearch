@@ -15,7 +15,6 @@ import com.example.translationsresearch.Translation;
 import com.example.translationsresearch.utils.Json;
 import com.webka.sdk.schedulers.Schedulers;
 import com.webka.sdk.webrtc.WebRTC;
-import com.webka.sdk.webrtc.WebRTCCapturer;
 import com.webka.sdk.webrtc.WebRTCConnection;
 
 import java.util.concurrent.CompletableFuture;
@@ -59,9 +58,7 @@ public class TranslationsStartView extends FrameLayout {
   public TranslationsStartView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
     mPublishingService = PublishingService.obtain(context).get();
-
     mWebRTC = WebRTC.from(context);
-    //System.out.println("WEBRTC: " + mWebRTC);
   }
 
   @Override
@@ -69,7 +66,6 @@ public class TranslationsStartView extends FrameLayout {
     super.onFinishInflate();
     mLabel = findViewById(R.id.label_lobby);
     mRetryButton = findViewById(R.id.button_retry);
-
     mRetryButton.setOnClickListener(v -> start());
   }
 
@@ -90,9 +86,8 @@ public class TranslationsStartView extends FrameLayout {
 
   private Disposable start() {
 
-    final WebRTCCapturer capturer = mWebRTC.capturer();
-
-    final Disposable.Swap swap = Disposables.swap();
+    //final WebRTCCapturer capturer = mWebRTC.capturer();
+    //final Disposable.Swap swap = Disposables.swap();
 
     updateViewsState("START", false);
 
@@ -119,35 +114,32 @@ public class TranslationsStartView extends FrameLayout {
 
           () -> System.out.println("WEBRTC CONNECTED @%^$^@$#^@$#^%@: ")),
 
-
-      () -> mPublishingService.stopTranslation(translations[0].roomId, translations[0].id).subscribe()
+      () -> mPublishingService.stopTranslation(translations[0].roomId, translations[0].id)
+        .then(mPublishingService.deleteTranslation(translations[0].id))
+        .subscribe()
 
     );
   }
 
   public final Mono<Void> webrtc(@NonNull Tuple3<Long, Long, String> tuple) {
-
     final WebRTC.Session session = new WebRTC.Session(tuple);
-
     final Tuple2<CompletableFuture<WebRTC.SDP>, CoreSubscriber<WebRTC.SDP>>
       answer = reactor.core.publisher.PublisherUtils.monoFuture();
-
-    final CompletableFuture<WebRTC.SDP> get = answer.getT1();
-    final CoreSubscriber<WebRTC.SDP> set = answer.getT2();
+    final CompletableFuture<WebRTC.SDP> remoteSdpGetter = answer.getT1();
+    final CoreSubscriber<WebRTC.SDP> remoteSdpSetter = answer.getT2();
 
     final WebRTCConnection connection = mWebRTC.connection(
       true,
-      get::join,                    /// дождаться ансвер от мс и заакцептить в пеер кон
-      v -> offer(session, set, v),  /// пеерконнекшн зарегал сдп и отдал мне и я отпр на мс офер
-      v -> ice(session, v),         /// пеерконекшн выплюнул айс, отправляем на мс
-      () -> ice(session),           /// айсы закончились
-      v -> media(session, v)        /// получен удаленные трэки
+      remoteSdpGetter::join,                                  /// дождаться ансвер от мс и заакцептить в пеер кон
+      localSdp -> offer(session, remoteSdpSetter, localSdp),  /// пеерконнекшн зарегал сдп и отдал мне и я отпр на мс офер
+      ice -> ice(session, ice),                               /// пеерконекшн выплюнул айс, отправляем на мс
+      () -> ice(session),                                     /// айсы закончились
+      mediaPair -> media(session, mediaPair)                  /// получен удаленные трэки
     );
 
     return Mono.create(sink -> sink
       .onCancel(connection::release)
       .success(connection.connect()))
-      .doOnNext(o -> System.out.println("CONNECTION CONNECT ^*%*&@%^%#^&#%@"))
       .transform(Schedulers::io_work)
       .then();
   }
@@ -178,18 +170,18 @@ public class TranslationsStartView extends FrameLayout {
    */
   private Void ice(WebRTC.Session session, WebRTC.ICE ice) {
     System.out.println("PublishingService.ice: " + ice);
-    return mPublishingService.msCandidate(session, ice).then().block();
+    return mPublishingService.msCandidate(session, ice).then()
+      .doOnError(throwable -> new Throwable("NO ANSWER: " + ice, throwable).printStackTrace())
+      .block();
   }
 
   /** @param session media session */
   @SuppressWarnings("unused")
-  private void ice(WebRTC.Session session) {
-  }
+  private void ice(WebRTC.Session session) { }
 
   /** @param media media pair */
   @SuppressWarnings("unused")
-  private void media(WebRTC.Session session, WebRTC.MediaPair media) {
-  }
+  private void media(WebRTC.Session session, WebRTC.MediaPair media) { }
 
   private void updateViewsState(String text, boolean isError) {
     mLabel.setText(text);
