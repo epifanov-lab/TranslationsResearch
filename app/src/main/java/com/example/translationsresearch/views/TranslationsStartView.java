@@ -9,9 +9,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.translationsresearch.PublishingService;
+import com.example.translationsresearch.service.translations.PublishingService;
 import com.example.translationsresearch.R;
-import com.example.translationsresearch.Translation;
+import com.example.translationsresearch.service.translations.Translation;
 import com.example.translationsresearch.utils.Json;
 import com.webka.sdk.schedulers.Schedulers;
 import com.webka.sdk.webrtc.WebRTC;

@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.translationsresearch.R;
-import com.example.translationsresearch.Translation;
-import com.example.translationsresearch.TranslationService;
+import com.example.translationsresearch.service.translations.Translation;
+import com.example.translationsresearch.service.translations.TranslationService;
 import com.example.translationsresearch.utils.Utils;
 import com.webka.sdk.schedulers.Schedulers;
 

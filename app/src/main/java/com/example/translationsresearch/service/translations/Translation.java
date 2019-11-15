@@ -17,7 +17,7 @@
  * from Realtime Technologies Limited.
  */
 
-package com.example.translationsresearch;
+package com.example.translationsresearch.service.translations;
 
 import com.example.translationsresearch.utils.Json;
 

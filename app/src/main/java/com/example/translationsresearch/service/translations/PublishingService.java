@@ -1,4 +1,4 @@
-package com.example.translationsresearch;
+package com.example.translationsresearch.service.translations;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,7 +10,6 @@ import com.webka.sdk.webrtc.WebRTC;
 import org.json.JSONObject;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

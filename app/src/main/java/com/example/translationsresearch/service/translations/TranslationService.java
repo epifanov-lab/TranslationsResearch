@@ -1,4 +1,4 @@
-package com.example.translationsresearch;
+package com.example.translationsresearch.service.translations;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

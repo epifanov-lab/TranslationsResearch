@@ -6,5 +6,6 @@
 
     <color name="black">#333</color>
     <color name="white">#fff</color>
+    <color name="white50">#80FFFFFF</color>
     <color name="red">#E44E4E</color>
 </resources>

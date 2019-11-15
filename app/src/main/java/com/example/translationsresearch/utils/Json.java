@@ -133,7 +133,6 @@ public final class Json {
   public static Optional<JSONObject> getObject(JSONObject object, String key)
   {return get(object, key).map(v -> (JSONObject) v);}
 
-
   /**
    * @param array json array
    * @param index array index

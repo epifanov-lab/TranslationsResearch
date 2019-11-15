@@ -14,8 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.example.translationsresearch.R;
-import com.example.translationsresearch.Translation;
-import com.example.translationsresearch.TranslationService;
+import com.example.translationsresearch.service.translations.Translation;
+import com.example.translationsresearch.service.translations.TranslationService;
 import com.example.translationsresearch.utils.Utils;
 
 import java.io.IOException;
