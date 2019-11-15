@@ -150,10 +150,15 @@ public final class Message {
       .map(Json::array).map(Message::just);
   }
 
-  static Flux<Message> subscribe(Client client, int chatId) {
+  static Flux<Message> eventMessageSent(Client client, int chatId) {
     return Flux.from(client.events("chat_message_sent", "chat",
       Json.newJson(body -> body.put("chatId", chatId)).toString()))
       .flatMap(Message::parseFromEvent);
+  }
+
+  static Flux<String> eventMessageSentRaw(Client client, int chatId) {
+    return Flux.from(client.events("chat_message_sent", "chat",
+      Json.newJson(body -> body.put("chatId", chatId)).toString()));
   }
 
   /** {@inheritDoc} */

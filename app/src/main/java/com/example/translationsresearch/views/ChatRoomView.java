@@ -71,14 +71,20 @@ public class ChatRoomView extends RelativeLayout {
     if (isVisible && mDisposable == null) {
       mDisposable = Disposables.composite(
 
-        mChatService.messages("3LePVpRx5SG")
+        mChatService.source("3LePVpRx5SG", 1)
+          .transform(Schedulers::work_main)
+          .subscribe(this::handle,
+            Throwable::printStackTrace)
+
+        /*mChatService.list("3LePVpRx5SG")
           .transform(Schedulers::work_main)
           .subscribe(this::handle, Throwable::printStackTrace),
 
-        mChatService.source()
+        mChatService.eventMessageSent()
           .transform(Schedulers::work_main)
           .log()
-          .subscribe(this::handle, Throwable::printStackTrace)
+          .subscribe(this::handle, Throwable::printStackTrace)*/
+
       );
     }
   }
