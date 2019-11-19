@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     mRoot = findViewById(R.id.root);
 
     ContextUtils.initialize(context());
-    mWebRTC = mInjector.webrtc();
+    //mWebRTC = mInjector.webrtc();
   }
 
   @Override
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     if (ChatService.NAME.equals(name)) return mInjector.chat();
     if (PublishingService.NAME.equals(name)) return mInjector.publishing();
     if (WebkaPlayerFactory.NAME.equals(name)) return mInjector.players();
-    if (WebRTC.NAME.equals(name)) return mWebRTC;
+    //if (WebRTC.NAME.equals(name)) return mWebRTC;
     else return super.getSystemService(name);
   }
 

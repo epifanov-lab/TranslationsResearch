@@ -5,18 +5,21 @@ import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.example.translationsresearch.R;
 import com.example.translationsresearch.service.chat.ChatService;
 import com.example.translationsresearch.service.chat.Message;
 import com.webka.sdk.schedulers.Schedulers;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import reactor.core.Disposable;
 import reactor.core.Disposables;
+
 
 /**
  * @author Konstantin Epifanov
@@ -27,6 +30,7 @@ public class ChatRoomView extends RelativeLayout {
   private final ChatService mChatService;
 
   private TextView mTextReceive;
+
   private TextView mTextSend;
 
   private final StringBuilder chat;
@@ -46,24 +50,23 @@ public class ChatRoomView extends RelativeLayout {
   }
 
   @SuppressWarnings("OptionalGetWithoutIsPresent")
-  public ChatRoomView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-    super(context, attrs, defStyleAttr, defStyleRes);
-    mChatService = ChatService.obtain(context).get();
-    chat = new StringBuilder();
+  public ChatRoomView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
+                      int defStyleRes) {
+    super(context, attrs, defStyleAttr, defStyleRes); mChatService = ChatService
+      .obtain(context)
+      .get(); chat = new StringBuilder();
   }
 
   @Override
   protected void onFinishInflate() {
-    super.onFinishInflate();
-    mTextReceive = findViewById(R.id.receive);
+    super.onFinishInflate(); mTextReceive = findViewById(R.id.receive);
     mTextSend = findViewById(R.id.send);
   }
 
   @Override
   public void onVisibilityAggregated(boolean isVisible) {
     if (!isVisible && mDisposable != null) {
-      mDisposable.dispose();
-      mDisposable = null;
+      mDisposable.dispose(); mDisposable = null;
     }
 
     super.onVisibilityAggregated(isVisible);
@@ -71,33 +74,22 @@ public class ChatRoomView extends RelativeLayout {
     if (isVisible && mDisposable == null) {
       mDisposable = Disposables.composite(
 
-        mChatService.source("3LePVpRx5SG", 1)
+        mChatService
+          .testGenSource1("3LePVpRx5SG", 1)
           .transform(Schedulers::work_main)
-          .subscribe(this::handle,
-            Throwable::printStackTrace)
-
-        /*mChatService.list("3LePVpRx5SG")
-          .transform(Schedulers::work_main)
-          .subscribe(this::handle, Throwable::printStackTrace),
-
-        mChatService.eventMessageSent()
-          .transform(Schedulers::work_main)
-          .log()
-          .subscribe(this::handle, Throwable::printStackTrace)*/
+          .subscribe(this::handle, Throwable::printStackTrace)
 
       );
     }
   }
 
   private void handle(Message[] messages) {
-    chat.setLength(0);
-    for (Message m : messages) handle(m);
-    mTextReceive.setText(chat.toString());
-  }
+    String text = Stream
+      .of(messages)
+      .map(Message::toString)
+      .collect(Collectors.joining("\n"));
 
-  private void handle(Message message) {
-    chat.append(message.fullName).append(": ").append(message.text).append("\n");
-    mTextReceive.setText(chat.toString());
+    mTextReceive.setText(text);
   }
 
 }

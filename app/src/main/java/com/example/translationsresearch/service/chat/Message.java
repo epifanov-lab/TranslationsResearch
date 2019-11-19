@@ -28,8 +28,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -110,7 +108,7 @@ public final class Message {
    *
    * @return set of messages
    */
-  public static Message[] just(JSONArray json) {
+  static Message[] just(JSONArray json) {
     try {
       final Message[] result = new Message[json.length()];
       for (int i = 0; i < result.length; i++)
@@ -126,22 +124,12 @@ public final class Message {
    *
    * @return single message instance
    */
-  public static Message just(JSONObject json) {
+  static Message just(JSONObject json) {
     try {
       return new Message(json);
     } catch (JSONException | NullPointerException exception) {
       throw new IllegalArgumentException(exception);
     }
-  }
-
-  private static Mono<Message> parseFromEvent(String response) {
-    Message message = null;
-    JSONArray ja = Json.array(response);
-    JSONObject jo0 = Json.getObject(ja, 0);
-    JSONObject jod = Json.getObject(jo0, "data").orElse(null);
-    if (jod != null) message = Message.just(jod);
-    return message != null ? Mono.just(message)
-      : Mono.error(() -> new IOException("Can't parse message from json: " + response));
   }
 
   static Mono<Message[]> list(Client client, String sessionId, int limit) {
@@ -153,12 +141,30 @@ public final class Message {
   static Flux<Message> eventMessageSent(Client client, int chatId) {
     return Flux.from(client.events("chat_message_sent", "chat",
       Json.newJson(body -> body.put("chatId", chatId)).toString()))
-      .flatMap(Message::parseFromEvent);
+      .flatMap(Message::asyncParseFromEvent);
   }
 
   static Flux<String> eventMessageSentRaw(Client client, int chatId) {
     return Flux.from(client.events("chat_message_sent", "chat",
       Json.newJson(body -> body.put("chatId", chatId)).toString()));
+  }
+
+  private static Mono<Message> asyncParseFromEvent(String response) {
+    Message message = null;
+    JSONArray ja = Json.array(response);
+    JSONObject jo0 = Json.getObject(ja, 0);
+    JSONObject jod = Json.getObject(jo0, "data").orElse(null);
+    if (jod != null) message = Message.just(jod);
+    return message != null ? Mono.just(message)
+      : Mono.error(() -> new IOException("Can't parse message from json: " + response));
+  }
+
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
+  static Message parseFromEvent(String response) {
+    final JSONArray ja = Json.array(response);
+    final JSONObject jo0 = Json.getObject(ja, 0);
+    final JSONObject jod = Json.getObject(jo0, "data").get();
+    return Message.just(jod);
   }
 
   /** {@inheritDoc} */
@@ -180,12 +186,6 @@ public final class Message {
 
   @Override
   public String toString() {
-    return "Message{" +
-      "id=" + id +
-      ", chatId=" + chatId +
-      ", text='" + text + '\'' +
-      ", userId=" + userId +
-      ", fullName='" + fullName + '\'' +
-      '}';
+    return fullName + ": " + text;
   }
 }
