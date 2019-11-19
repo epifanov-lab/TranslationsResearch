@@ -75,7 +75,7 @@ public class ChatRoomView extends RelativeLayout {
       mDisposable = Disposables.composite(
 
         mChatService
-          .testGenSource1("3LePVpRx5SG", 1)
+          .source("3LePVpRx5SG", 1)
           .transform(Schedulers::work_main)
           .subscribe(this::handle, Throwable::printStackTrace)
 
@@ -86,7 +86,7 @@ public class ChatRoomView extends RelativeLayout {
   private void handle(Message[] messages) {
     String text = Stream
       .of(messages)
-      .map(Message::toString)
+      .map(message -> message.text)
       .collect(Collectors.joining("\n"));
 
     mTextReceive.setText(text);
